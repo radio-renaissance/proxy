@@ -1,0 +1,18 @@
+pranks:
+  stream:
+    port: 8000
+anus:
+  stream:
+    port: 8010
+314:
+  stream:
+    port: 8020
+2ch:
+  stream:
+    port: 8030
+baneks:
+  stream:
+    port: 8040
+books:
+  stream:
+    port: 8050
