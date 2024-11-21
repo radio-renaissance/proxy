@@ -104,6 +104,8 @@ class HttpServer:
     def start(self):
         app = self.app
 
+        # pranks
+
         @app.route('/v1/pranks/stream')
         def pranks_stream():
             return self._handle_stream('pranks')
@@ -111,6 +113,12 @@ class HttpServer:
         @app.route('/v1/pranks/meta')
         def pranks_meta():
             return self._handle_meta('pranks')
+
+        @app.route('/v1/pranks/download/<art_id>')
+        def pranks_download(art_id: str):
+            return self._handle_download('pranks', art_id)
+
+        # anus
 
         @app.route('/v1/anus/stream')
         def anus_stream():
@@ -124,6 +132,8 @@ class HttpServer:
         def anus_download(art_id: str):
             return self._handle_download('anus', art_id)
 
+        # 314
+
         @app.route('/v1/314/stream')
         def _314_stream():
             return self._handle_stream(314)
@@ -131,6 +141,12 @@ class HttpServer:
         @app.route('/v1/314/meta')
         def _314_meta():
             return self._handle_meta('station_314')
+
+        @app.route('/v1/314/download/<art_id>')
+        def _314_download(art_id: str):
+            return self._handle_download('station_314', art_id)
+
+        # 2ch
 
         @app.route('/v1/2ch/stream')
         def _2ch_stream():
@@ -140,6 +156,12 @@ class HttpServer:
         def _2ch_meta():
             return self._handle_meta('2ch')
 
+        @app.route('/v1/2ch/download/<art_id>')
+        def _2ch_download(art_id: str):
+            return self._handle_download('2ch', art_id)
+
+        # baneks
+
         @app.route('/v1/baneks/stream')
         def baneks_stream():
             return self._handle_stream('baneks')
@@ -148,6 +170,12 @@ class HttpServer:
         def baneks_meta():
             return self._handle_meta('baneks')
 
+        @app.route('/v1/baneks/download/<art_id>')
+        def _baneks_download(art_id: str):
+            return self._handle_download('baneks', art_id)
+
+        # books
+
         @app.route('/v1/books/stream')
         def books_stream():
             return self._handle_stream('books')
@@ -155,6 +183,10 @@ class HttpServer:
         @app.route('/v1/books/meta')
         def books_meta():
             return self._handle_meta('books')
+
+        @app.route('/v1/books/download/<art_id>')
+        def _books_download(art_id: str):
+            return self._handle_download('books', art_id)
 
         app.run(host = self.host, port = self.port)
 
