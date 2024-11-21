@@ -17,8 +17,8 @@ echo "Using conda at $CONDA_ROOT"
 
 source "$CONDA_ROOT/etc/profile.d/conda.sh"
 
-conda create --name rrp python=3.12
+conda create --name rrp python=3.12 -y
 conda activate rrp
 
-conda install python-lsp-server click flask pyyaml
-pip install requests
+conda install python-lsp-server click flask pyyaml -y
+pip install requests flask-cors

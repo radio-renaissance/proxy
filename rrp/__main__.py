@@ -2,6 +2,7 @@ from click import group, option
 from flask import Flask, Response, stream_with_context
 from yaml import safe_load
 from requests import get
+from flask_cors import CORS
 
 
 DEFAULT_STATIONS_HOST = 'localhost'
@@ -21,7 +22,9 @@ class HttpServer:
     ):
         self.config = config
 
-        self.app = Flask(name)
+        self.app = app = Flask(name)
+        CORS(app)
+
         self.name = name
 
         self.stations_host = stations_host
