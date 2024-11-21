@@ -29,7 +29,7 @@ class HttpServer:
         self.app = app = Flask(name)
         app.json.ensure_ascii = False
 
-        CORS(app)
+        CORS(app, expose_headers = ('Content-Disposition', ))
 
         self.name = name
 
