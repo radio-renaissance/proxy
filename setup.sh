@@ -21,4 +21,4 @@ conda create --name rrp python=3.12 -y
 conda activate rrp
 
 conda install python-lsp-server click flask pyyaml -y
-pip install requests flask-cors
+pip install requests flask-cors mutagen

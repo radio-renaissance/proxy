@@ -1,8 +1,12 @@
 from click import group, option
-from flask import Flask, Response, stream_with_context
+from io import BytesIO
+from flask import Flask, Response, stream_with_context, send_file
 from yaml import safe_load
 from requests import get
 from flask_cors import CORS
+
+from mutagen.mp3 import MP3
+from mutagen.easyid3 import EasyID3
 
 
 DEFAULT_STATIONS_HOST = 'localhost'
@@ -23,6 +27,8 @@ class HttpServer:
         self.config = config
 
         self.app = app = Flask(name)
+        app.json.ensure_ascii = False
+
         CORS(app)
 
         self.name = name
@@ -41,12 +47,40 @@ class HttpServer:
     def _make_meta_url(self, station: str):
         return f'http://{self.stations_host}:{self.stations_port}/api/nowplaying/{station}'
 
+    def _make_download_url(self, station: str, art_id: str):
+        return f'http://{self.stations_host}:{self.stations_port}/api/station/{station}/ondemand/download/{art_id}'
+
     def _handle_stream(self, station: str):
         req = get(self._make_stream_url(station), stream = True)
 
         return Response(
-            stream_with_context(req.iter_content(chunk_size = STREAMING_CHUNK_SIZE))
+            stream_with_context(req.iter_content(chunk_size = STREAMING_CHUNK_SIZE)),
+            headers = {
+                'content-type': 'audio/mpeg'
+            }
         )
+
+    def _handle_download(self, station: str, art_id: str):
+        req = get(self._make_download_url(station, art_id), stream = True)
+        audio = MP3(BytesIO(req.content), ID3 = EasyID3)
+
+        title = audio.get('title')
+        artist = audio.get('artist')
+
+        filename = None
+
+        if title is None:
+            if artist is None:
+                filename = 'foo.mp3'
+            else:
+                filename = f'{artist[0]}.mp3'
+        else:
+            if artist is None:
+                filename = f'{title[0]}.mp3'
+            else:
+                filename = f'{artist[0]} - {title[0]}.mp3'
+
+        return send_file(BytesIO(req.content), download_name = filename, mimetype = 'audio/mpeg', as_attachment = True)
 
     def _handle_meta(self, station: str):
         meta = get(
@@ -85,6 +119,10 @@ class HttpServer:
         @app.route('/v1/anus/meta')
         def anus_meta():
             return self._handle_meta('anus')
+
+        @app.route('/v1/anus/download/<art_id>')
+        def anus_download(art_id: str):
+            return self._handle_download('anus', art_id)
 
         @app.route('/v1/314/stream')
         def _314_stream():
